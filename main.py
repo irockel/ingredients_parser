@@ -48,15 +48,15 @@ def ingredients_parser():
         file_path = get_file_path(file_name)
         file.save(file_path)
         
-        # Extract ingredients using Google Vision (existing logic)
-        response = ingredients_vision.detect_document(file_path)
+        # Extract ingredients using EasyOCR
+        ocr_results_ingredients = ingredients_vision.detect_text_easyocr(file_path)
         ingredients, allergens = ingredients_vision.extract_ingredients_and_allergens(
-            response
+            ocr_results_ingredients
         )
 
-        # Extract nutrition info using EasyOCR (new logic)
-        ocr_results = nutrition_vision.detect_text_easyocr(file_path)
-        nutrition = nutrition_parser.parse_easyocr_nutrition(ocr_results)
+        # Extract nutrition info using EasyOCR
+        ocr_results_nutrition = nutrition_vision.detect_text_easyocr(file_path)
+        nutrition = nutrition_parser.parse_easyocr_nutrition(ocr_results_nutrition)
         nutrition_text = "\n".join(nutrition)
 
         file_dict = {
