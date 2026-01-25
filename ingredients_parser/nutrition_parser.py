@@ -1,42 +1,34 @@
 import json
 
+def parse_easyocr_nutrition(ocr_results):
+    """
+    Simplistic parser for EasyOCR results to extract nutrition info.
+    Since EasyOCR doesn't return a table structure like Google Vision's Document AI,
+    we'll need to group text by Y-coordinate or use heuristics.
+    """
+    # Sort by Y-coordinate (top to bottom)
+    # bbox is [[x1, y1], [x2, y2], [x3, y3], [x4, y4]]
+    # we use the average Y of the top two points
+    sorted_results = sorted(ocr_results, key=lambda x: (x['boundingBox'][0][1] + x['boundingBox'][1][1]) / 2)
+    
+    nutrition_info = []
+    for item in sorted_results:
+        text = item['text']
+        # Very simple extraction: just return the lines
+        nutrition_info.append(text)
+        
+    return nutrition_info
 
 def get_blocks(api_result):
+    """
+    Original function for Google Vision results. 
+    Kept for compatibility if needed, but updated for EasyOCR usage.
+    """
+    # If api_result is already a list (from EasyOCR), just return it
+    if isinstance(api_result, list):
+        return api_result, []
+    
     api_dict = json.loads(api_result)
-    blocks = api_dict["responses"][0]["fullTextAnnotation"]["pages"][0]["blocks"]
-    tables = [*filter(lambda x: x["blockType"] == "TABLE", blocks)]
-    key_value_pairs = [*filter(lambda x: x["blockType"] == "KEY_VALUE_PAIR", blocks)]
-    return tables, key_value_pairs
-
-
-def y_starting_coordinate(block):  # for sorting
-    return block["boundingBox"]["normalizedVertices"][0]["y"]
-
-
-def process_table(table_block):
-    table = table_block["table"]
-    # Difference between text and mergedText?
-    # TODO sort
-    header_rows = []
-    for row in table["headerRows"]:
-        header_rows.append([i.get("text") for i in row["cells"]])
-    body_rows = []
-    for row in table["bodyRows"]:
-        sorted_cells = sorted(
-            row["cells"], key=lambda x: y_starting_coordinate(x["textBlock"])
-        )
-        body_rows.append([i.get("text") for i in row["cells"]])
-    return header_rows, body_rows
-
-
-def process_key_value_pairs(key_value_pair_blocks):
-    sorted_key_value_pair_blocks = sorted(
-        key_value_pair_blocks, key=y_starting_coordinate
-    )
-    return [
-        (
-            item["keyValuePair"]["keyBlock"]["mergedText"],
-            item["keyValuePair"]["valueBlock"]["mergedText"],
-        )
-        for item in sorted_key_value_pair_blocks
-    ]
+    # The rest depends on Google Vision's format which we are moving away from.
+    # We'll just return empty lists if it's not EasyOCR format.
+    return [], []

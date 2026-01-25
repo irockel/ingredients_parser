@@ -2,7 +2,7 @@ import os
 import base64
 import tempfile
 from werkzeug.utils import secure_filename
-from ingredients_parser import ingredients_vision
+from ingredients_parser import ingredients_vision, nutrition_vision, nutrition_parser
 from flask import jsonify, render_template, Flask, request
 
 
@@ -47,12 +47,23 @@ def ingredients_parser():
     for file_name, file in files.items():
         file_path = get_file_path(file_name)
         file.save(file_path)
+        
+        # Extract ingredients using Google Vision (existing logic)
         response = ingredients_vision.detect_document(file_path)
         ingredients, allergens = ingredients_vision.extract_ingredients_and_allergens(
             response
         )
 
-        file_dict = {"ingredients": ingredients, "allergens": allergens}
+        # Extract nutrition info using EasyOCR (new logic)
+        ocr_results = nutrition_vision.detect_text_easyocr(file_path)
+        nutrition = nutrition_parser.parse_easyocr_nutrition(ocr_results)
+        nutrition_text = "\n".join(nutrition)
+
+        file_dict = {
+            "ingredients": ingredients, 
+            "allergens": allergens,
+            "nutrition": nutrition_text
+        }
 
         print("Processed file: %s" % file_name)
 
@@ -66,6 +77,7 @@ def ingredients_parser():
             "ingredients.html",
             ingredients=file_dict.get("ingredients") or "",
             allergens=file_dict.get("allergens") or "",
+            nutrition=file_dict.get("nutrition") or "",
             image_data=encoded_image.decode("utf-8"),
         )
 
