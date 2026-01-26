@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+.env
+.vscode/
+.idea/
+.github/
+tests/
+*.png
+LICENSE
+README.md

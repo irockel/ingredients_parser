@@ -1,23 +1,25 @@
-FROM python:3
+FROM python:3.12-slim
 
-RUN mkdir ingredients_parser && mkdir templates
-ADD main.py /
-ADD requirements.txt /
+# Install system dependencies required for EasyOCR and OpenCV
+RUN apt-get update && apt-get install -y \
+    libgl1 \
+    libglib2.0-0 \
+    && rm -rf /var/lib/apt/lists/*
 
-ADD ingredients_parser/__init__.py ingredients_parser/
-ADD ingredients_parser/config.py ingredients_parser/
-ADD ingredients_parser/datastore.py ingredients_parser/
-ADD ingredients_parser/ingredients_parser.py ingredients_parser/
-ADD ingredients_parser/ingredients_vision.py ingredients_parser/
-ADD ingredients_parser/nutrition_parser.py ingredients_parser/
-ADD ingredients_parser/nutrition_vision.py ingredients_parser/
-ADD ingredients_parser/vision_service_account.json ingredients_parser/
-ADD templates/index.html templates/
-ADD templates/ingredients.html templates/
+WORKDIR /app
 
-RUN pip install -r requirements.txt
+# Copy and install dependencies first for better caching
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-ENTRYPOINT python main.py
+# Copy the rest of the application
+COPY . .
+
+# Expose the port the app runs on
+EXPOSE 5000
+
+# Run the application
+CMD ["python", "main.py"]
 
 
 
