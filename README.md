@@ -1,48 +1,83 @@
-# Nutrition & Ingredients Parser
+# 🥗 Nutrition & Ingredients Parser
 
-Small sample application showing the extraction of product information from the ingredient 
-and allergen label on a product packaging using 
-[Google Cloud Vision AI](https://cloud.google.com/vision). The image needs to be cropped
-to the ingredient and allergen part of the product packaging. Extraction of the data from a 
-full product back image currently is not supported.
+A lightweight Flask application that extracts **ingredients**, **allergens**, and **nutrition information** from product packaging images using **[EasyOCR](https://github.com/JaidedAI/EasyOCR)**.
 
 ![ingredients_scan](ingredients_scan.png)
 
-## Setup
+## 🚀 Features
 
-A service account with proper rights to access the Cloud Vision API in a Google Cloud Project
-is required. Find more about this in the official 
-[how to guide](https://cloud.google.com/vision/docs/libraries#client-libraries-install-python).
+- **Ingredient Extraction**: Automatically identifies and lists ingredients from a cropped image.
+- **Allergen Detection**: Specifically highlights potential allergens (e.g., "Contains: Milk", "May contain: Nuts").
+- **Nutrition Parsing**: Extracts nutrition facts for easy digitization.
+- **OCR Powered**: Utilizes EasyOCR for robust, offline-capable text recognition.
+- **Web Interface**: Simple, user-friendly Flask-based UI for uploading and viewing results.
 
-Place the service account json inside the "ingredients_parser" folder, name it according to
-the **config.py** file, the default is **vision_service_account.json**.
+## 🛠️ Setup
 
-## Build & Run
-To run the software follow the following steps. There are some test images to use inside
-the **tests/static/cropped_ingredients** folder.
+### Prerequisites
 
-### Development Setup
-To run the parser locally:
+- Python 3.9+
+- [Optional] GPU for faster OCR processing (defaults to CPU)
 
-    python -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-    python main.py
-    
-After this navigate with your browser to http://localhost:5000/
+### Local Development
 
-### Docker
-To run it using docker:
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd ingredients_parser
+   ```
 
-    docker build -t ingredients-parser .
-    docker run --name ingredients-parser -p 5000:5000 ingredients-parser
-    
-### Kubernetes
-The tool can also deployment to a kubernetes cluster using the 
-included **deploy-ingredients-parser.yaml** file.
+2. **Create and activate a virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
 
-    kubectl apply -f deploy-ingredients-parser.yaml
-    
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the application**:
+   ```bash
+   python main.py
+   ```
+
+5. **Access the UI**:
+   Navigate to [http://localhost:5000/](http://localhost:5000/) in your browser.
+
+## 🐳 Docker Support
+
+To run the application using Docker:
+
+1. **Build the image**:
+   ```bash
+   docker build -t ingredients-parser .
+   ```
+
+2. **Run the container**:
+   ```bash
+   docker run --name ingredients-parser -p 5000:5000 ingredients-parser
+   ```
+
+## 🧪 Testing
+
+The project uses `pytest` for testing. To run the tests, use:
+
+```bash
+pytest tests/test_ingredients_vision.py
+```
+
+Sample images for testing can be found in `tests/static/cropped_ingredients`.
+
+## 📝 Usage Notes
+
+- For best results, ensure the image is **cropped** to the relevant section of the product packaging (ingredients or nutrition table).
+- The current version is optimized for English text.
+
+---
+*Built with Python, Flask, and EasyOCR.*
+
  
 
  
