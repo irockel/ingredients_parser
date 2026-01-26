@@ -1,29 +1,98 @@
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Nutrition Parsing Result</title>
-  </head>
-  <body style="font-family:helvetica,serif">
-    <div style="text-align: center;">
-      <h1 style="font-family:helvetica,serif">Ingredients & Nutrients Parser</h1>
-      <br>
-        <img src="data:image/jpeg;base64,{{image_data}}" width="500" alt="parsing-result"/>
-        <br>
-        <table border="1" width="70%">
-          <tr>
-            <td><b>Ingredients</b></td>
-          <td>{{ingredients}}</td>
-          </tr>
-          <tr>
-            <td><b>Allergens</b></td>
-          <td>{{allergens}}</td>
-          </tr>
-          <tr>
-            <td><b>Nutrition</b></td>
-          <td><pre>{{nutrition}}</pre></td>
-          </tr>
-        </table>
-    </div>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results - Nutrition Parser</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <a href="/" class="flex items-center space-x-2">
+                    <span class="text-2xl">🥗</span>
+                    <span class="text-xl font-bold text-gray-900">Nutrition Parser</span>
+                </a>
+                <a href="/" class="text-sm font-medium text-green-600 hover:text-green-700">← Back to Upload</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow p-6">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">Analysis Results</h1>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Image Section -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden border">
+                    <div class="p-4 bg-gray-50 border-b">
+                        <h2 class="text-lg font-semibold text-gray-700">Original Image</h2>
+                    </div>
+                    <div class="p-4 flex justify-center bg-gray-200">
+                        <img src="data:image/jpeg;base64,{{image_data}}" class="max-w-full h-auto rounded shadow-sm" alt="parsing-result"/>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="space-y-6">
+                    <!-- Ingredients Card -->
+                    <div class="bg-white rounded-xl shadow-lg border">
+                        <div class="p-4 bg-gray-50 border-b">
+                            <h2 class="text-lg font-semibold text-gray-700">Ingredients</h2>
+                        </div>
+                        <div class="p-4">
+                            {% if ingredients %}
+                                <p class="text-gray-800 leading-relaxed">{{ingredients}}</p>
+                            {% else %}
+                                <p class="text-gray-400 italic">No ingredients detected</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Allergens Card -->
+                    <div class="bg-white rounded-xl shadow-lg border">
+                        <div class="p-4 bg-gray-50 border-b flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <h2 class="text-lg font-semibold text-gray-700">Allergens</h2>
+                        </div>
+                        <div class="p-4">
+                            {% if allergens %}
+                                <div class="bg-amber-50 border-l-4 border-amber-400 p-3">
+                                    <p class="text-amber-800 font-medium">{{allergens}}</p>
+                                </div>
+                            {% else %}
+                                <p class="text-gray-400 italic">No allergens detected</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Nutrition Card -->
+                    <div class="bg-white rounded-xl shadow-lg border">
+                        <div class="p-4 bg-gray-50 border-b">
+                            <h2 class="text-lg font-semibold text-gray-700">Nutrition Information</h2>
+                        </div>
+                        <div class="p-4">
+                            {% if nutrition %}
+                                <div class="bg-gray-50 rounded p-4 font-mono text-sm overflow-x-auto">
+                                    <pre class="whitespace-pre-wrap">{{nutrition}}</pre>
+                                </div>
+                            {% else %}
+                                <p class="text-gray-400 italic">No nutrition information detected</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t py-4 text-center text-gray-500 text-sm mt-8">
+        Built with Python, Flask, and EasyOCR
+    </footer>
+</body>
 </html>
 
 
