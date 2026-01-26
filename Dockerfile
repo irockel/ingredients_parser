@@ -3,8 +3,6 @@ FROM python:3
 RUN mkdir ingredients_parser && mkdir templates
 ADD main.py /
 ADD requirements.txt /
-ADD setup.cfg /
-ADD setup.py /
 
 ADD ingredients_parser/__init__.py ingredients_parser/
 ADD ingredients_parser/config.py ingredients_parser/

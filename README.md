@@ -24,8 +24,7 @@ the **tests/static/cropped_ingredients** folder.
 ### Development Setup
 To run the parser locally:
 
-    pip install virtualenv
-    virtualenv venv
+    python -m venv venv
     source venv/bin/activate
     pip install -r requirements.txt
     python main.py

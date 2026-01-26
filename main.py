@@ -30,7 +30,7 @@ def ingredients_parser():
     Returns:
         The response text, or any set of values that can be turned into a
         Response object using `make_response`
-        <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>.
+        <https://flask.palletsprojects.com/en/stable/api/#flask.Flask.make_response>.
     """
 
     # This code will process each non-file field in the form
