@@ -34,6 +34,7 @@ jobs:
         python -m compileall .
     - name: Test with pytest
       run: |
+        export PYTHONPATH=$PYTHONPATH:.
         pytest tests/test_ingredients_vision.py
     - name: Build Docker image
       run: |
