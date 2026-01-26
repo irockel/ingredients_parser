@@ -2,6 +2,8 @@ name: Python CI
 
 on:
   push:
+    branches:
+      - main
     paths-ignore:
       - 'README.md'
       - 'LICENSE'
@@ -36,6 +38,12 @@ jobs:
       run: |
         export PYTHONPATH=$PYTHONPATH:.
         pytest tests/test_ingredients_vision.py
+    - name: Free up disk space
+      run: |
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
     - name: Build Docker image
       run: |
         docker build -t ingredients-parser:latest .
