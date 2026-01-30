@@ -9,12 +9,14 @@ on:
       - 'LICENSE'
       - '.gitignore'
       - '*.png'
+      - 'frontend/**'
   pull_request:
     paths-ignore:
       - 'README.md'
       - 'LICENSE'
       - '.gitignore'
       - '*.png'
+      - 'frontend/**'
 
 jobs:
   build:
@@ -30,7 +32,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
     - name: Check compilation
       run: |
         python -m compileall .
@@ -46,4 +48,4 @@ jobs:
         sudo rm -rf /opt/hostedtoolcache/CodeQL
     - name: Build Docker image
       run: |
-        docker build -t ingredients-parser:latest .
+        docker build -t ingredients-parser:latest -f backend/Dockerfile .
