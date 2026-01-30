@@ -22,6 +22,7 @@ A lightweight Flask application that extracts **ingredients**, **allergens**, an
 
 - Python 3.9+
 - [Optional] GPU for faster OCR processing (defaults to CPU)
+- AWS CLI configured (if using Rekognition)
 
 ### Local Development
 
@@ -39,30 +40,32 @@ A lightweight Flask application that extracts **ingredients**, **allergens**, an
 
 3. **Install dependencies**:
    ```bash
-   pip install -r requirements.txt
+   pip install -r backend/requirements.txt
    ```
 
-4. **Run the application**:
+4. **Run the application locally**:
    ```bash
-   python main.py
+   ./run_local.sh
    ```
+   This will start the FastAPI backend on port 8000 and a simple web server for the frontend on port 3000.
 
 5. **Access the UI**:
-   Navigate to [http://localhost:5000/](http://localhost:5000/) in your browser.
+   Navigate to [http://localhost:3000/](http://localhost:3000/) in your browser.
 
-## 🐳 Docker Support
+### Switching OCR Provider
 
-To run the application using Docker:
+The backend supports both EasyOCR and AWS Rekognition. You can switch between them using the `OCR_TYPE` environment variable.
 
-1. **Build the image**:
-   ```bash
-   docker build -t ingredients-parser .
-   ```
+- **EasyOCR (Default)**: `export OCR_TYPE=easyocr`
+- **AWS Rekognition**: `export OCR_TYPE=rekognition`
 
-2. **Run the container**:
-   ```bash
-   docker run --name ingredients-parser -p 5000:5000 ingredients-parser
-   ```
+Note: Using Rekognition requires `boto3` to be configured with valid AWS credentials.
+
+## 📁 Project Structure
+
+- `backend/`: FastAPI application, OCR logic, and providers.
+- `frontend/`: Static HTML/JS frontend, ready for S3 deployment.
+- `tests/`: Test suites for OCR and parsing logic.
 
 ## 🧪 Testing
 

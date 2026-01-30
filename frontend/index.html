@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingredients & Nutrients Parser</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🥗</span>
+                    <span class="text-xl font-bold text-gray-900">Nutrition Parser</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow p-6">
+        <div id="upload-section" class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 mt-10">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Upload Image</h1>
+                <p class="text-gray-600">Extract ingredients and nutrition facts from product packaging</p>
+            </div>
+
+            <form id="upload-form" class="space-y-6">
+                <div class="flex items-center justify-center w-full">
+                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500 font-semibold">Click to upload or drag and drop</p>
+                            <p class="text-xs text-gray-400">PNG, JPG or JPEG</p>
+                        </div>
+                        <input id="dropzone-file" type="file" name="file" class="hidden" required />
+                    </label>
+                </div>
+                
+                <div id="file-name" class="text-sm text-gray-600 text-center hidden"></div>
+
+                <button type="submit" id="submit-btn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors disabled:bg-green-300">
+                    Analyze Image
+                </button>
+            </form>
+            <div id="loading" class="hidden mt-4 text-center text-green-600 font-medium">
+                Analyzing image... This may take a few seconds.
+            </div>
+        </div>
+
+        <div id="results-section" class="max-w-6xl mx-auto hidden mt-4">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">Analysis Results</h1>
+                <button onclick="resetUpload()" class="text-sm font-medium text-green-600 hover:text-green-700">← Back to Upload</button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Image Section -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden border">
+                    <div class="p-4 bg-gray-50 border-b">
+                        <h2 class="text-lg font-semibold text-gray-700">Original Image</h2>
+                    </div>
+                    <div class="p-4 flex justify-center bg-gray-200">
+                        <img id="result-image" class="max-w-full h-auto rounded shadow-sm" alt="parsing-result"/>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="space-y-6">
+                    <!-- Ingredients Card -->
+                    <div class="bg-white rounded-xl shadow-lg border">
+                        <div class="p-4 bg-gray-50 border-b">
+                            <h2 class="text-lg font-semibold text-gray-700">Ingredients</h2>
+                        </div>
+                        <div id="ingredients-content" class="p-4">
+                        </div>
+                    </div>
+
+                    <!-- Allergens Card -->
+                    <div class="bg-white rounded-xl shadow-lg border">
+                        <div class="p-4 bg-gray-50 border-b flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <h2 class="text-lg font-semibold text-gray-700">Allergens</h2>
+                        </div>
+                        <div id="allergens-content" class="p-4">
+                        </div>
+                    </div>
+
+                    <!-- Nutrition Card -->
+                    <div class="bg-white rounded-xl shadow-lg border">
+                        <div class="p-4 bg-gray-50 border-b">
+                            <h2 class="text-lg font-semibold text-gray-700">Nutrition Information</h2>
+                        </div>
+                        <div id="nutrition-content" class="p-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t py-4 text-center text-gray-500 text-sm mt-8">
+        Built with Python, FastAPI, and EasyOCR/AWS Rekognition
+    </footer>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        const fileInput = document.getElementById('dropzone-file');
+        const fileNameDisplay = document.getElementById('file-name');
+        const uploadForm = document.getElementById('upload-form');
+        const uploadSection = document.getElementById('upload-section');
+        const resultsSection = document.getElementById('results-section');
+        const loading = document.getElementById('loading');
+        const submitBtn = document.getElementById('submit-btn');
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileNameDisplay.textContent = `Selected: ${e.target.files[0].name}`;
+                fileNameDisplay.classList.remove('hidden');
+            }
+        });
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            loading.classList.remove('hidden');
+            submitBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${API_URL}/process`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to process image');
+                }
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                loading.classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        });
+
+        function displayResults(data) {
+            uploadSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+
+            document.getElementById('result-image').src = `data:image/jpeg;base64,${data.image_data}`;
+            
+            const ingredientsContent = document.getElementById('ingredients-content');
+            if (data.ingredients) {
+                ingredientsContent.innerHTML = `<p class="text-gray-800 leading-relaxed">${data.ingredients}</p>`;
+            } else {
+                ingredientsContent.innerHTML = `<p class="text-gray-400 italic">No ingredients detected</p>`;
+            }
+
+            const allergensContent = document.getElementById('allergens-content');
+            if (data.allergens) {
+                allergensContent.innerHTML = `
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-3">
+                        <p class="text-amber-800 font-medium">${data.allergens}</p>
+                    </div>`;
+            } else {
+                allergensContent.innerHTML = `<p class="text-gray-400 italic">No allergens detected</p>`;
+            }
+
+            const nutritionContent = document.getElementById('nutrition-content');
+            if (data.nutrition) {
+                nutritionContent.innerHTML = `
+                    <div class="bg-gray-50 rounded p-4 font-mono text-sm overflow-x-auto">
+                        <pre class="whitespace-pre-wrap">${data.nutrition}</pre>
+                    </div>`;
+            } else {
+                nutritionContent.innerHTML = `<p class="text-gray-400 italic">No nutrition information detected</p>`;
+            }
+        }
+
+        function resetUpload() {
+            resultsSection.classList.add('hidden');
+            uploadSection.classList.remove('hidden');
+            uploadForm.reset();
+            fileNameDisplay.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
