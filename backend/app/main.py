@@ -3,10 +3,9 @@ import tempfile
 import base64
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 from typing import Dict, Any
 
-from .ocr.easyocr_provider import EasyOCRProvider
-from .ocr.rekognition_provider import RekognitionProvider
 from .logic.ingredients import extract_ingredients_and_allergens
 from .logic.nutrition import parse_nutrition
 
@@ -23,10 +22,16 @@ app.add_middleware(
 
 # Initialize OCR provider based on environment variable
 OCR_TYPE = os.getenv("OCR_TYPE", "easyocr").lower()
+
 if OCR_TYPE == "rekognition":
+    from .ocr.rekognition_provider import RekognitionProvider
     provider = RekognitionProvider()
 else:
+    from .ocr.easyocr_provider import EasyOCRProvider
     provider = EasyOCRProvider()
+
+# Mangum handler for AWS Lambda
+handler = Mangum(app)
 
 @app.get("/")
 async def root():

@@ -61,6 +61,51 @@ The backend supports both EasyOCR and AWS Rekognition. You can switch between th
 
 Note: Using Rekognition requires `boto3` to be configured with valid AWS credentials.
 
+### AWS Deployment (Terraform)
+
+The infrastructure is managed using Terraform and includes an ECR repository, a Lambda function (with Function URL), and an S3 bucket for the static frontend. It uses a **remote state** stored in S3 for better collaboration and state persistence.
+
+1. **Prerequisites**:
+   - Docker installed and running.
+   - AWS CLI configured with appropriate permissions.
+   - Terraform installed.
+   - **S3 Bucket for Remote State**: An S3 bucket is required to store the Terraform state. By default, it expects `ingredients-parser-terraform-state`. You can create it via CLI:
+     ```bash
+     aws s3 mb s3://ingredients-parser-terraform-state
+     ```
+
+2. **Initialize and Create ECR Repository**:
+   ```bash
+   cd terraform
+   terraform init
+   terraform apply -target=module.ingredients_parser.aws_ecr_repository.app
+   cd ..
+   ```
+
+3. **Build and Push the Lambda Image**:
+   ```bash
+   ./deploy_lambda.sh
+   ```
+   *Note: On the first run, the script will push the image to ECR but skip the Lambda code update since the function hasn't been created yet.*
+
+4. **Deploy the Rest of the Infrastructure**:
+   ```bash
+   cd terraform
+   terraform apply
+   cd ..
+   ```
+
+5. **Configure and Deploy Frontend**:
+   - Get the Lambda URL from Terraform outputs: `cd terraform && terraform output lambda_function_url`
+   - Update `API_URL` in `frontend/index.html` with this value.
+   - Sync the frontend to S3:
+   ```bash
+   aws s3 sync frontend/ s3://$(cd terraform && terraform output -raw frontend_s3_bucket)/
+   ```
+
+6. **Access the App**:
+   Use the `frontend_s3_url` from Terraform outputs to open the application in your browser.
+
 ## 📁 Project Structure
 
 - `backend/`: FastAPI application, OCR logic, and providers.
