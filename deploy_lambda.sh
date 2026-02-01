@@ -21,7 +21,15 @@ echo "🆔 Account: $ACCOUNT_ID"
 
 # 1. Build the Docker image
 echo "📦 Building Docker image..."
-docker build -t $REPO_NAME -f backend/Dockerfile.lambda .
+# Determine architecture (default to arm64 if on Mac M-series, otherwise could use buildx)
+ARCH=$(uname -m)
+if [ "$ARCH" == "arm64" ]; then
+    PLATFORM="linux/arm64"
+else
+    PLATFORM="linux/amd64"
+fi
+echo "🏗️  Building for platform: $PLATFORM"
+docker build --platform $PLATFORM -t $REPO_NAME -f backend/Dockerfile.lambda .
 
 # 2. Authenticate Docker to ECR
 echo "🔐 Authenticating Docker to ECR..."

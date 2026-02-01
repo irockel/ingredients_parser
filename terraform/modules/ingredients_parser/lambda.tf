@@ -3,6 +3,7 @@ resource "aws_lambda_function" "api" {
   role          = aws_iam_role.lambda_role.arn
   package_type  = "Image"
   image_uri     = "${aws_ecr_repository.app.repository_url}:latest"
+  architectures = ["arm64"]
 
   timeout     = 30
   memory_size = 512
@@ -22,14 +23,6 @@ resource "aws_lambda_function" "api" {
 resource "aws_lambda_function_url" "api_url" {
   function_name      = aws_lambda_function.api.function_name
   authorization_type = "NONE"
-
-  cors {
-    allow_credentials = true
-    allow_origins     = ["*"]
-    allow_methods     = ["GET", "POST"]
-    allow_headers     = ["date", "keep-alive", "content-type"]
-    max_age           = 86400
-  }
 }
 
 resource "aws_lambda_permission" "allow_public_access_url" {

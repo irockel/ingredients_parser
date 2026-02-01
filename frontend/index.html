@@ -136,7 +136,8 @@
             formData.append('file', file);
 
             try {
-                const response = await fetch(`${API_URL}/process`, {
+                const normalizedApiUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+                const response = await fetch(`${normalizedApiUrl}/process`, {
                     method: 'POST',
                     body: formData
                 });
