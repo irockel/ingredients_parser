@@ -13,3 +13,7 @@ output "frontend_s3_url" {
 output "frontend_s3_bucket" {
   value = aws_s3_bucket.frontend.id
 }
+
+output "github_actions_role_arn" {
+  value = aws_iam_role.github_actions.arn
+}

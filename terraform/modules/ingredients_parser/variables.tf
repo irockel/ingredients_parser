@@ -9,3 +9,8 @@ variable "project_name" {
   type        = string
   default     = "ingredients-parser"
 }
+
+variable "github_repo" {
+  description = "GitHub repository (username/repo)"
+  type        = string
+}

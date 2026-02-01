@@ -13,3 +13,7 @@ output "frontend_s3_url" {
 output "frontend_s3_bucket" {
   value = module.ingredients_parser.frontend_s3_bucket
 }
+
+output "github_actions_role_arn" {
+  value = module.ingredients_parser.github_actions_role_arn
+}

@@ -108,7 +108,9 @@
     </footer>
 
     <script>
-        const API_URL = 'http://localhost:8000';
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000'
+            : 'https://lg5s2gkkn3ra3w6eww7e3bsdde0cyqap.lambda-url.eu-central-1.on.aws/';
         const fileInput = document.getElementById('dropzone-file');
         const fileNameDisplay = document.getElementById('file-name');
         const uploadForm = document.getElementById('upload-form');

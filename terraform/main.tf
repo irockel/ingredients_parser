@@ -3,4 +3,5 @@ module "ingredients_parser" {
 
   aws_region   = var.aws_region
   project_name = var.project_name
+  github_repo  = var.github_repo
 }
