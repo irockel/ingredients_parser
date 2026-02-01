@@ -29,7 +29,13 @@ else
     PLATFORM="linux/amd64"
 fi
 echo "🏗️  Building for platform: $PLATFORM"
-docker build --platform $PLATFORM -t $REPO_NAME -f backend/Dockerfile.lambda .
+# We use buildx if available to ensure we can disable provenance/sbom attestations 
+# which cause issues with Lambda media types
+if docker buildx version > /dev/null 2>&1; then
+    docker buildx build --platform $PLATFORM -t $REPO_NAME -f backend/Dockerfile.lambda --provenance=false --sbom=false --load .
+else
+    docker build --platform $PLATFORM -t $REPO_NAME -f backend/Dockerfile.lambda .
+fi
 
 # 2. Authenticate Docker to ECR
 echo "🔐 Authenticating Docker to ECR..."

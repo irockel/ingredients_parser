@@ -92,6 +92,8 @@ jobs:
           -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
           -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
           -f backend/Dockerfile.lambda \
+          --provenance=false \
+          --sbom=false \
           --push .
 
     - name: Update Lambda function code
