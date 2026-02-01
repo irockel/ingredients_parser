@@ -3,13 +3,15 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - '**'
+      - main
     paths-ignore:
       - 'README.md'
       - 'LICENSE'
       - '.gitignore'
       - '*.png'
   pull_request:
+    branches:
+      - main
     paths-ignore:
       - 'README.md'
       - 'LICENSE'
@@ -83,7 +85,7 @@ jobs:
 
     - name: Build, tag, and push image to Amazon ECR
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.registry }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker buildx build --platform linux/arm64 \
@@ -96,7 +98,7 @@ jobs:
       run: |
         aws lambda update-function-code \
           --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
-          --image-uri ${{ steps.login-ecr.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          --image-uri ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
     - name: Update Lambda function configuration
       run: |
