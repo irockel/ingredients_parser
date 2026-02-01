@@ -6,6 +6,10 @@ resource "aws_cloudfront_origin_access_control" "default" {
   signing_protocol                  = "sigv4"
 }
 
+data "aws_cloudfront_cache_policy" "optimized" {
+  name = "Managed-CachingOptimized"
+}
+
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
     domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
@@ -25,20 +29,15 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "S3-${aws_s3_bucket.frontend.id}"
 
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
+    cache_policy_id = data.aws_cloudfront_cache_policy.optimized.id
 
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
   }
 
-  price_class = "PriceClass_100" # Use only North America and Europe
+  price_class = "PriceClass_All"
+
+  # this was added automatically by Cloudfront, copying here for now to avoid it's getting destroyed.
+  web_acl_id  = "arn:aws:wafv2:us-east-1:359767621870:global/webacl/CreatedByCloudFront-624e99a9/e0148de2-a4fc-4f8e-8062-a175b7dfcd2d"
 
   restrictions {
     geo_restriction {
