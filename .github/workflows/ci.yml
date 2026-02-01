@@ -60,7 +60,7 @@ jobs:
       ECR_REPOSITORY: ingredients-parser
       LAMBDA_FUNCTION_NAME: ingredients-parser-api
       AWS_ACCOUNT_ID: "359767621870"
-      S3_BUCKET: ingredients-parser-frontend-${{ AWS_ACCOUNT_ID }}
+      S3_BUCKET: "ingredients-parser-frontend-359767621870"
       CLOUDFRONT_DISTRIBUTION_ID: "E2CDUUVW4T7EEV"
     steps:
     - uses: actions/checkout@v6
