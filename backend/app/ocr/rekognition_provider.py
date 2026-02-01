@@ -1,9 +1,12 @@
-import boto3
 from typing import List, Dict, Any
 from app.ocr.base import OCRProvider
 
 class RekognitionProvider(OCRProvider):
     def __init__(self, region_name='us-east-1'):
+        try:
+            import boto3
+        except ImportError:
+            raise ImportError("boto3 is not installed. Please install it with 'pip install boto3'")
         self.client = boto3.client('rekognition', region_name=region_name)
 
     def detect_text(self, image_path: str) -> List[Dict[str, Any]]:

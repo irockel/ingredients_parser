@@ -1,9 +1,12 @@
-import easyocr
 from typing import List, Dict, Any
 from app.ocr.base import OCRProvider
 
 class EasyOCRProvider(OCRProvider):
     def __init__(self, languages=['en'], gpu=False):
+        try:
+            import easyocr
+        except ImportError:
+            raise ImportError("easyocr is not installed. Please install it with 'pip install easyocr'")
         self.reader = easyocr.Reader(languages, gpu=gpu)
 
     def detect_text(self, image_path: str) -> List[Dict[str, Any]]:

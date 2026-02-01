@@ -41,6 +41,7 @@ A lightweight Flask application that extracts **ingredients**, **allergens**, an
 3. **Install dependencies**:
    ```bash
    pip install -r backend/requirements.txt
+   pip install pytest  # Required for running tests
    ```
 
 4. **Run the application locally**:
@@ -119,6 +120,8 @@ The project uses `pytest` for testing. To run the tests, use:
 ```bash
 pytest tests/test_ingredients_vision.py
 ```
+
+*Note: If `easyocr` or `torch` are not installed, these tests will be skipped automatically.*
 
 Sample images for testing can be found in `tests/static/cropped_ingredients`.
 
