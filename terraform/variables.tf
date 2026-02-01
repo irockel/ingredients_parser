@@ -15,3 +15,15 @@ variable "github_repo" {
   type        = string
   default     = "irockel/ingredients_parser"
 }
+
+variable "domain_name" {
+  description = "Domain name for the application"
+  type        = string
+  default     = "grimmfrost.de"
+}
+
+variable "subdomain" {
+  description = "Subdomain for the application"
+  type        = string
+  default     = "ingredients"
+}

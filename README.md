@@ -64,16 +64,14 @@ Note: Using Rekognition requires `boto3` to be configured with valid AWS credent
 
 ### AWS Deployment (Terraform)
 
-The infrastructure is managed using Terraform and includes an ECR repository, a Lambda function (with Function URL), and an S3 bucket for the static frontend. It uses a **remote state** stored in S3 for better collaboration and state persistence.
+The infrastructure is managed using Terraform and includes an ECR repository, a Lambda function (with Function URL), an S3 bucket for the static frontend, and a **CloudFront distribution** with TLS (ACM) for secure, high-performance delivery. It uses a **remote state** stored in S3 for better collaboration and state persistence.
 
 1. **Prerequisites**:
    - Docker installed and running.
    - AWS CLI configured with appropriate permissions.
    - Terraform installed.
-   - **S3 Bucket for Remote State**: An S3 bucket is required to store the Terraform state. By default, it expects `ingredients-parser-terraform-state`. You can create it via CLI:
-     ```bash
-     aws s3 mb s3://ingredients-parser-terraform-state
-     ```
+   - **S3 Bucket for Remote State**: An S3 bucket is required to store the Terraform state. By default, it expects `de-grimmfrost-terraform-state`.
+   - **Route 53 Hosted Zone**: A hosted zone for your domain (e.g., `grimmfrost.de`) must already exist in your AWS account.
 
 2. **Initialize and Create ECR Repository**:
    ```bash
@@ -99,13 +97,15 @@ The infrastructure is managed using Terraform and includes an ECR repository, a 
 5. **Configure and Deploy Frontend**:
    - Get the Lambda URL from Terraform outputs: `cd terraform && terraform output lambda_function_url`
    - Update `API_URL` in `frontend/index.html` with this value.
+   - The frontend is now accessible via the custom domain configured in Terraform (default: `https://ingredients.grimmfrost.de`).
    - Sync the frontend to S3:
    ```bash
    aws s3 sync frontend/ s3://$(cd terraform && terraform output -raw frontend_s3_bucket)/
    ```
+   - **GitHub Actions Note**: After the first successful deployment, copy the `cloudfront_distribution_id` from Terraform outputs and update the `CLOUDFRONT_DISTRIBUTION_ID` in `.github/workflows/ci.yml` to enable automatic cache invalidation on future pushes.
 
 6. **Access the App**:
-   Use the `frontend_s3_url` from Terraform outputs to open the application in your browser.
+   Use the `frontend_s3_url` (CloudFront URL with custom domain) from Terraform outputs to open the application in your browser.
 
 ## 📁 Project Structure
 

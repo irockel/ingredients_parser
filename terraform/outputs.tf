@@ -10,6 +10,14 @@ output "frontend_s3_url" {
   value = module.ingredients_parser.frontend_s3_url
 }
 
+output "cloudfront_domain_name" {
+  value = module.ingredients_parser.cloudfront_domain_name
+}
+
+output "cloudfront_distribution_id" {
+  value = module.ingredients_parser.cloudfront_distribution_id
+}
+
 output "frontend_s3_bucket" {
   value = module.ingredients_parser.frontend_s3_bucket
 }
