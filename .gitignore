@@ -128,3 +128,6 @@ vision_service_account.json
 .idea
 .output.txt
 
+# Terraform
+**/.terraform
+**/.terraform.lock.hcl

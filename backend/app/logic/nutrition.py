@@ -1,8 +1,8 @@
-import json
+from typing import List, Dict, Any
 
-def parse_easyocr_nutrition(ocr_results):
+def parse_nutrition(ocr_results: List[Dict[str, Any]]) -> List[str]:
     """
-    Simplistic parser for EasyOCR results to extract nutrition info.
+    Simplistic parser for OCR results to extract nutrition info.
     We'll need to group text by Y-coordinate or use heuristics.
     """
     # Sort by Y-coordinate (top to bottom)
@@ -17,13 +17,3 @@ def parse_easyocr_nutrition(ocr_results):
         nutrition_info.append(text)
         
     return nutrition_info
-
-def get_blocks(api_result):
-    """
-    Updated for EasyOCR usage.
-    """
-    # If api_result is already a list (from EasyOCR), just return it
-    if isinstance(api_result, list):
-        return api_result, []
-    
-    return [], []

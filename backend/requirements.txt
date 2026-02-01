@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-multipart
+easyocr
+torch
+torchvision
+torchaudio
+boto3
+mangum

@@ -1,31 +1,7 @@
 import re
-import io
-import easyocr
-from . import config
+from typing import List, Dict, Any, Tuple
 
-# Initialize EasyOCR reader
-# gpu=False because we might not have a GPU in the environment
-reader = easyocr.Reader(['en'], gpu=False)
-
-ingredients_labels = "INGREDIENTS"
-
-
-def detect_text_easyocr(path):
-    results = reader.readtext(path)
-    # result is a list of tuples: (bbox, text, prob)
-    # bbox is [[x, y], [x, y], [x, y], [x, y]]
-
-    formatted_results = []
-    for (bbox, text, prob) in results:
-        formatted_results.append({
-            "text": text,
-            "confidence": prob,
-            "boundingBox": bbox
-        })
-    return formatted_results
-
-
-def extract_ingredients_and_allergens(ocr_results):
+def extract_ingredients_and_allergens(ocr_results: List[Dict[str, Any]]) -> Tuple[str, str]:
     allergen_phrases = [
         "may contain",
         "made in a facility that also processes",
