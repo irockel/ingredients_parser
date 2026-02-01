@@ -58,7 +58,7 @@ jobs:
     env:
       AWS_REGION: eu-central-1
       ECR_REPOSITORY: ingredients-parser
-      S3_BUCKET: ingredients-parser-frontend-359767621870
+      S3_BUCKET: ingredients-parser-frontend-${{ env.AWS_ACCOUNT_ID }}
       LAMBDA_FUNCTION_NAME: ingredients-parser-api
       AWS_ACCOUNT_ID: "359767621870"
       CLOUDFRONT_DISTRIBUTION_ID: "E2CDUUVW4T7EEV"
