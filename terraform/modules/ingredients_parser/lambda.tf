@@ -24,11 +24,26 @@ resource "aws_lambda_function_url" "api_url" {
   authorization_type = "NONE"
 
   cors {
-    allow_credentials = false
+    allow_credentials = true
     allow_origins     = ["*"]
-    allow_methods     = ["*"]
-    allow_headers     = ["*"]
-    expose_headers    = ["*"]
+    allow_methods     = ["GET", "POST"]
+    allow_headers     = ["date", "keep-alive", "content-type"]
     max_age           = 86400
   }
+}
+
+resource "aws_lambda_permission" "allow_public_access_url" {
+  statement_id           = "FunctionURLAllowPublicAccess"
+  action                 = "lambda:InvokeFunctionUrl"
+  function_name          = aws_lambda_function.api.function_name
+  principal              = "*"
+  function_url_auth_type = "NONE"
+}
+
+resource "aws_lambda_permission" "allow_public_access" {
+  statement_id             = "FunctionURLAllowInvokeAction"
+  action                   = "lambda:InvokeFunction"
+  function_name            = aws_lambda_function.api.function_name
+  principal                = "*"
+  invoked_via_function_url = "true"
 }

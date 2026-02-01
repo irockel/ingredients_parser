@@ -6,8 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 from typing import Dict, Any
 
-from .logic.ingredients import extract_ingredients_and_allergens
-from .logic.nutrition import parse_nutrition
+from app.logic.ingredients import extract_ingredients_and_allergens
+from app.logic.nutrition import parse_nutrition
 
 app = FastAPI(title="Nutrition & Ingredients Parser API")
 
@@ -20,22 +20,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize OCR provider based on environment variable
-OCR_TYPE = os.getenv("OCR_TYPE", "easyocr").lower()
+# Initialize OCR provider lazily
+_provider = None
 
-if OCR_TYPE == "rekognition":
-    from .ocr.rekognition_provider import RekognitionProvider
-    provider = RekognitionProvider()
-else:
-    from .ocr.easyocr_provider import EasyOCRProvider
-    provider = EasyOCRProvider()
+def get_provider():
+    global _provider
+    if _provider is None:
+        ocr_type = os.getenv("OCR_TYPE", "easyocr").lower()
+        if ocr_type == "rekognition":
+            from app.ocr.rekognition_provider import RekognitionProvider
+            _provider = RekognitionProvider()
+        else:
+            from app.ocr.easyocr_provider import EasyOCRProvider
+            _provider = EasyOCRProvider()
+    return _provider
 
-# Mangum handler for AWS Lambda
-handler = Mangum(app)
+# Mangum handler for AWS Lambda with lifespan disabled for compatibility
+handler = Mangum(app, lifespan="off")
 
 @app.get("/")
 async def root():
-    return {"message": "Nutrition & Ingredients Parser API is running", "ocr_provider": OCR_TYPE}
+    return {
+        "message": "Nutrition & Ingredients Parser API is running",
+        "ocr_provider": os.getenv("OCR_TYPE", "easyocr").lower()
+    }
 
 @app.post("/process")
 async def process_image(file: UploadFile = File(...)):
@@ -47,6 +55,7 @@ async def process_image(file: UploadFile = File(...)):
 
     try:
         # Perform OCR
+        provider = get_provider()
         ocr_results = provider.detect_text(tmp_path)
         
         # Extract ingredients and allergens

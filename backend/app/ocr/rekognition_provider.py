@@ -1,6 +1,6 @@
 import boto3
 from typing import List, Dict, Any
-from .base import OCRProvider
+from app.ocr.base import OCRProvider
 
 class RekognitionProvider(OCRProvider):
     def __init__(self, region_name='us-east-1'):

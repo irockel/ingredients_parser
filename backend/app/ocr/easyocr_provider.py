@@ -1,6 +1,6 @@
 import easyocr
 from typing import List, Dict, Any
-from .base import OCRProvider
+from app.ocr.base import OCRProvider
 
 class EasyOCRProvider(OCRProvider):
     def __init__(self, languages=['en'], gpu=False):
