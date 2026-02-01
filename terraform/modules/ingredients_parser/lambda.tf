@@ -10,14 +10,16 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      OCR_TYPE = "rekognition"
+      OCR_TYPE            = "rekognition"
+      BASIC_USER_ID       = var.basic_user_id
+      BASIC_USER_PASSWORD = var.basic_user_password
     }
   }
 
-  # Lifecycle ignore_changes for image_uri can be useful if updates are done via CLI
-  # lifecycle {
-  #   ignore_changes = [image_uri]
-  # }
+  # Lifecycle ignore_changes is useful because CI/CD updates these values
+  lifecycle {
+    ignore_changes = [image_uri, environment]
+  }
 }
 
 resource "aws_lambda_function_url" "api_url" {

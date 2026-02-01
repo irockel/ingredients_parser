@@ -14,9 +14,44 @@
                     <span class="text-2xl">🥗</span>
                     <span class="text-xl font-bold text-gray-900">Nutrition Parser</span>
                 </div>
+                <div class="flex items-center space-x-3">
+                    <span id="auth-indicator" class="hidden flex h-2 w-2 rounded-full bg-green-500" title="Authenticated"></span>
+                    <button onclick="toggleAuthModal()" class="text-sm font-medium text-gray-600 hover:text-gray-900 border rounded-md px-3 py-1.5 flex items-center space-x-1 hover:bg-gray-50 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        <span>Authorize</span>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Authentication</h3>
+                <button onclick="toggleAuthModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">User ID</label>
+                    <input type="text" id="basic-user" placeholder="Enter User ID" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+                    <input type="password" id="basic-pass" placeholder="Enter Password" class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-all">
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button onclick="toggleAuthModal()" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button onclick="saveAuth()" class="px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-sm transition-all">Save Credentials</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <main class="flex-grow p-6">
         <div id="upload-section" class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 mt-10">
@@ -111,6 +146,9 @@
         const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
             ? 'http://localhost:8000'
             : 'https://lg5s2gkkn3ra3w6eww7e3bsdde0cyqap.lambda-url.eu-central-1.on.aws/';
+        
+        let authHeader = sessionStorage.getItem('ingredients_auth') || '';
+
         const fileInput = document.getElementById('dropzone-file');
         const fileNameDisplay = document.getElementById('file-name');
         const uploadForm = document.getElementById('upload-form');
@@ -118,6 +156,28 @@
         const resultsSection = document.getElementById('results-section');
         const loading = document.getElementById('loading');
         const submitBtn = document.getElementById('submit-btn');
+        const authIndicator = document.getElementById('auth-indicator');
+
+        if (authHeader) authIndicator.classList.remove('hidden');
+
+        function toggleAuthModal() {
+            document.getElementById('auth-modal').classList.toggle('hidden');
+        }
+
+        function saveAuth() {
+            const user = document.getElementById('basic-user').value;
+            const pass = document.getElementById('basic-pass').value;
+            if (user && pass) {
+                authHeader = 'Basic ' + btoa(user + ':' + pass);
+                sessionStorage.setItem('ingredients_auth', authHeader);
+                authIndicator.classList.remove('hidden');
+            } else {
+                authHeader = '';
+                sessionStorage.removeItem('ingredients_auth');
+                authIndicator.classList.add('hidden');
+            }
+            toggleAuthModal();
+        }
 
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
@@ -139,9 +199,15 @@
 
             try {
                 const normalizedApiUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+                const headers = {};
+                if (authHeader) {
+                    headers['Authorization'] = authHeader;
+                }
+
                 const response = await fetch(`${normalizedApiUrl}/process`, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    headers: headers
                 });
 
                 if (!response.ok) {

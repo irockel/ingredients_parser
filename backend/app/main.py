@@ -1,8 +1,10 @@
 import os
 import tempfile
 import base64
-from fastapi import FastAPI, File, UploadFile, HTTPException
+import secrets
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from mangum import Mangum
 from typing import Dict, Any
 
@@ -19,6 +21,34 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+security = HTTPBasic(auto_error=False)
+
+def get_current_user(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = os.getenv("BASIC_USER_ID")
+    correct_password = os.getenv("BASIC_USER_PASSWORD")
+    
+    # If not configured, we allow it for local testing if no env vars are set
+    if not correct_username or not correct_password:
+        return credentials.username if credentials else "local_user"
+
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+
+    is_correct_username = secrets.compare_digest(credentials.username, correct_username)
+    is_correct_password = secrets.compare_digest(credentials.password, correct_password)
+    
+    if not (is_correct_username and is_correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
 # Initialize OCR provider lazily
 _provider = None
@@ -39,14 +69,18 @@ def get_provider():
 handler = Mangum(app, lifespan="off")
 
 @app.get("/")
-async def root():
+async def root(username: str = Depends(get_current_user)):
     return {
         "message": "Nutrition & Ingredients Parser API is running",
-        "ocr_provider": os.getenv("OCR_TYPE", "easyocr").lower()
+        "ocr_provider": os.getenv("OCR_TYPE", "easyocr").lower(),
+        "user": username
     }
 
 @app.post("/process")
-async def process_image(file: UploadFile = File(...)):
+async def process_image(
+    file: UploadFile = File(...),
+    username: str = Depends(get_current_user)
+):
     # Save uploaded file to a temporary location
     with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file.filename)[1]) as tmp:
         content = await file.read()

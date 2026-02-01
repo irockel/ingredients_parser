@@ -98,6 +98,12 @@ jobs:
           --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
           --image-uri ${{ steps.login-ecr.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
+    - name: Update Lambda function configuration
+      run: |
+        aws lambda update-function-configuration \
+          --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
+          --environment "Variables={OCR_TYPE=rekognition,BASIC_USER_ID=${{ secrets.BASIC_USER_ID }},BASIC_USER_PASSWORD=${{ secrets.BASIC_USER_PASSWORD }}}"
+
     - name: Deploy Frontend to S3
       run: |
         aws s3 sync frontend/ s3://${{ env.S3_BUCKET }}/ --delete

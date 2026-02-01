@@ -44,6 +44,13 @@ docker push $IMAGE_URI
 if aws lambda get-function --function-name $LAMBDA_NAME > /dev/null 2>&1; then
     echo "🔄 Updating Lambda function code..."
     aws lambda update-function-code --function-name $LAMBDA_NAME --image-uri $IMAGE_URI
+    
+    # Optional: Update environment variables if provided in the local environment
+    if [ ! -z "$BASIC_USER_ID" ] && [ ! -z "$BASIC_USER_PASSWORD" ]; then
+        echo "🔐 Updating Basic Auth configuration..."
+        aws lambda update-function-configuration --function-name $LAMBDA_NAME \
+            --environment "Variables={OCR_TYPE=rekognition,BASIC_USER_ID=$BASIC_USER_ID,BASIC_USER_PASSWORD=$BASIC_USER_PASSWORD}"
+    fi
 else
     echo "ℹ️  Lambda function $LAMBDA_NAME not found. Skipping code update (Terraform will create it)."
 fi

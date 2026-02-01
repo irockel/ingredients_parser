@@ -27,3 +27,16 @@ variable "subdomain" {
   type        = string
   default     = "ingredients"
 }
+
+variable "basic_user_id" {
+  description = "Basic Auth User ID"
+  type        = string
+  default     = ""
+}
+
+variable "basic_user_password" {
+  description = "Basic Auth Password"
+  type        = string
+  default     = ""
+  sensitive   = true
+}

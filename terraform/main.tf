@@ -11,4 +11,6 @@ module "ingredients_parser" {
   github_repo  = var.github_repo
   domain_name  = var.domain_name
   subdomain    = var.subdomain
+  basic_user_id = var.basic_user_id
+  basic_user_password = var.basic_user_password
 }
