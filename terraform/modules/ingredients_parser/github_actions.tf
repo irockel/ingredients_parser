@@ -59,7 +59,10 @@ resource "aws_iam_policy" "github_actions_policy" {
       {
         Effect = "Allow"
         Action = [
-          "lambda:UpdateFunctionCode"
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration",
+          "lambda:GetFunction",
+          "lambda:GetFunctionConfiguration"
         ]
         Resource = aws_lambda_function.api.arn
       },
@@ -69,7 +72,8 @@ resource "aws_iam_policy" "github_actions_policy" {
           "s3:PutObject",
           "s3:ListBucket",
           "s3:DeleteObject",
-          "s3:GetBucketWebsite"
+          "s3:GetObject",
+          "s3:GetBucketLocation"
         ]
         Resource = [
           aws_s3_bucket.frontend.arn,
