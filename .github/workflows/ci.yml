@@ -102,6 +102,11 @@ jobs:
           --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
           --image-uri ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
+    - name: Wait for Lambda function update to complete
+      run: |
+        aws lambda wait function-updated \
+          --function-name ${{ env.LAMBDA_FUNCTION_NAME }}
+
     - name: Update Lambda function configuration
       run: |
         aws lambda update-function-configuration \

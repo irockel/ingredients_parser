@@ -51,6 +51,10 @@ if aws lambda get-function --function-name $LAMBDA_NAME > /dev/null 2>&1; then
     echo "🔄 Updating Lambda function code..."
     aws lambda update-function-code --function-name $LAMBDA_NAME --image-uri $IMAGE_URI
     
+    # Wait for the function code update to complete before updating configuration
+    echo "⏳ Waiting for Lambda function update to complete..."
+    aws lambda wait function-updated --function-name $LAMBDA_NAME
+
     # Optional: Update environment variables if provided in the local environment
     if [ ! -z "$BASIC_USER_ID" ] && [ ! -z "$BASIC_USER_PASSWORD" ]; then
         echo "🔐 Updating Basic Auth configuration..."
