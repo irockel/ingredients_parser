@@ -111,6 +111,10 @@ The infrastructure is managed using Terraform and includes an ECR repository, a 
 6. **Access the App**:
    Use the `frontend_s3_url` (CloudFront URL with custom domain) from Terraform outputs to open the application in your browser.
 
+## Public Deployment on `ingredients.grimmfrost.de`
+There is a Deployment available on https://ingredients.grimmfrost.de/. This is for Testing Purposes only and is protected 
+by a user and password.
+
 ## 📁 Project Structure
 
 - `backend/`: FastAPI application, OCR logic, and providers.
