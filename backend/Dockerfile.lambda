@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.12
+FROM public.ecr.aws/lambda/python:3.14
 
 # Set the working directory to /var/task (default for AWS Lambda)
 WORKDIR /var/task
