@@ -27,7 +27,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -62,7 +62,7 @@ jobs:
       S3_BUCKET: "ingredients-parser-frontend-359767621870"
       CLOUDFRONT_DISTRIBUTION_ID: "E2CDUUVW4T7EEV"
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
