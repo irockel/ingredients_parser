@@ -27,9 +27,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
         cache: 'pip'
@@ -38,30 +38,17 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest
-        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+        if [ -f backend/requirements.txt ]; then
+          # Install CPU-only version of torch to save time and space in CI
+          pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install -r backend/requirements.txt
+        fi
     - name: Check compilation
       run: |
         python -m compileall .
     - name: Test with pytest
       run: |
         pytest tests/test_ingredients_vision.py
-    - name: Free up disk space
-      run: |
-        sudo rm -rf /usr/share/dotnet
-        sudo rm -rf /usr/local/lib/android
-        sudo rm -rf /opt/ghc
-        sudo rm -rf /opt/hostedtoolcache/CodeQL
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Build local Docker image (Check)
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        file: backend/Dockerfile
-        tags: ingredients-parser:latest
-        push: false
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
 
   deploy:
     needs: test
@@ -75,7 +62,7 @@ jobs:
       S3_BUCKET: "ingredients-parser-frontend-359767621870"
       CLOUDFRONT_DISTRIBUTION_ID: "E2CDUUVW4T7EEV"
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v4
     
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -106,7 +93,7 @@ jobs:
         provenance: false
         sbom: false
         cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-to: type=gha,mode=min
 
     - name: Update Lambda function code
       run: |
