@@ -4,9 +4,11 @@
 [![License](https://img.shields.io/github/license/irockel/ingredients_parser)](LICENSE)
 # 🥗 Nutrition & Ingredients Parser
 
-A lightweight Flask application that extracts **ingredients**, **allergens**, and **nutrition information** from product packaging images using **[EasyOCR](https://github.com/JaidedAI/EasyOCR)**.
+A lightweight FastAPI application that extracts **ingredients**, **allergens**, and **nutrition information** from product 
+packaging images using **[EasyOCR](https://github.com/JaidedAI/EasyOCR)** if running locally. The application can also be installed as Lamdba on AWS. If
+deployed to AWS it will use AWS Rekognition for text extraction.
 
-![ingredients_scan](ingredients_scan.png)
+<div style="text-align: center;"><img src="./ingredients_scan.png" alt="Ingredients Parser Result Screen" width="400"></div>
 
 ## 🚀 Features
 
@@ -14,7 +16,7 @@ A lightweight Flask application that extracts **ingredients**, **allergens**, an
 - **Allergen Detection**: Specifically highlights potential allergens (e.g., "Contains: Milk", "May contain: Nuts").
 - **Nutrition Parsing**: Extracts nutrition facts for easy digitization.
 - **OCR Powered**: Utilizes EasyOCR for robust, offline-capable text recognition.
-- **Web Interface**: Simple, user-friendly Flask-based UI for uploading and viewing results.
+- **Web Interface**: Simple, user-friendly Tailwind-CSS UI for uploading and viewing results.
 
 ## 🛠️ Setup
 
@@ -69,6 +71,7 @@ The infrastructure is managed using Terraform and includes an ECR repository, a 
 1. **Prerequisites**:
    - Docker installed and running.
    - AWS CLI configured with appropriate permissions.
+   - You need to be logged in to your AWS Account and this has to be enabled in the session.
    - Terraform installed.
    - **S3 Bucket for Remote State**: An S3 bucket is required to store the Terraform state. By default, it expects `de-grimmfrost-terraform-state`.
    - **Route 53 Hosted Zone**: A hosted zone for your domain (e.g., `grimmfrost.de`) must already exist in your AWS account.
@@ -77,9 +80,10 @@ The infrastructure is managed using Terraform and includes an ECR repository, a 
    ```bash
    cd terraform
    terraform init
-   terraform apply -target=module.ingredients_parser.aws_ecr_repository.app
+   terraform apply
    cd ..
    ```
+   This will fail with the configuration of the Lambda. Run the `deploy_lambda.sh` once to have an initial image in the ECR Repository.
 
 3. **Build and Push the Lambda Image**:
    ```bash
@@ -111,6 +115,7 @@ The infrastructure is managed using Terraform and includes an ECR repository, a 
 
 - `backend/`: FastAPI application, OCR logic, and providers.
 - `frontend/`: Static HTML/JS frontend, ready for S3 deployment.
+- `terraform/`: Infrastructure as Code for usage on AWS.
 - `tests/`: Test suites for OCR and parsing logic.
 
 ## 🧪 Testing
