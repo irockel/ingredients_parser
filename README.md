@@ -1,6 +1,5 @@
 [![Python CI](https://github.com/irockel/ingredients_parser/actions/workflows/ci.yml/badge.svg)](https://github.com/irockel/tda/actions/workflows/build.yml)
 [![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen.svg)](https://github.com/irockel/ingredients_parser/issues?q=is%3Aissue+is%3Aopen+label%3Adependencies)
-[![Dependencies](https://img.shields.io/librariesio/github/irockel/ingredients_parser)](https://libraries.io/github/irockel/ingredients_parser)
 [![License](https://img.shields.io/github/license/irockel/ingredients_parser)](LICENSE)
 # 🥗 Nutrition & Ingredients Parser
 
