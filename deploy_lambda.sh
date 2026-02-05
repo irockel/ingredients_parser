@@ -48,10 +48,14 @@ docker push $IMAGE_URI
 
 # 4. Update Lambda Function code (only if it exists)
 if aws lambda get-function --function-name $LAMBDA_NAME > /dev/null 2>&1; then
+    # Wait for any existing update to complete before starting a new one
+    echo "⏳ Checking if Lambda is ready for update..."
+    aws lambda wait function-updated --function-name $LAMBDA_NAME
+
     echo "🔄 Updating Lambda function code..."
     aws lambda update-function-code --function-name $LAMBDA_NAME --image-uri $IMAGE_URI
     
-    # Wait for the function code update to complete before updating configuration
+    # Wait for the current function code update to complete before updating configuration
     echo "⏳ Waiting for Lambda function update to complete..."
     aws lambda wait function-updated --function-name $LAMBDA_NAME
 

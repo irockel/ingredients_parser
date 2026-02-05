@@ -1,5 +1,9 @@
 name: CI/CD Pipeline
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 on:
   push:
     branches:
@@ -94,6 +98,11 @@ jobs:
         sbom: false
         cache-from: type=gha
         cache-to: type=gha,mode=min
+
+    - name: Wait for any existing Lambda update to complete
+      run: |
+        aws lambda wait function-updated \
+          --function-name ${{ env.LAMBDA_FUNCTION_NAME }}
 
     - name: Update Lambda function code
       run: |
