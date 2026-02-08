@@ -21,6 +21,7 @@ on:
       - 'LICENSE'
       - '.gitignore'
       - '*.png'
+      - 'aws-architecture.*'
       - 'frontend/**'
 
 permissions:

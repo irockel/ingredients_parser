@@ -11,3 +11,4 @@ tests/
 *.png
 LICENSE
 README.md
+aws-architecture.*

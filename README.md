@@ -67,6 +67,8 @@ Note: Using Rekognition requires `boto3` to be configured with valid AWS credent
 
 The infrastructure is managed using Terraform and includes an ECR repository, a Lambda function (with Function URL), an S3 bucket for the static frontend, and a **CloudFront distribution** with TLS (ACM) for secure, high-performance delivery. It uses a **remote state** stored in S3 for better collaboration and state persistence.
 
+<div style="text-align: center;"><img src="./aws-architecture.svg" alt="AWS Architecture" width="800"></div>
+
 1. **Prerequisites**:
    - Docker installed and running.
    - AWS CLI configured with appropriate permissions.
