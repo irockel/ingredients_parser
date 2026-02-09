@@ -27,6 +27,8 @@ on:
 permissions:
   id-token: write
   contents: read
+  checks: write
+  pull-requests: write
 
 jobs:
   test:
@@ -41,8 +43,9 @@ jobs:
         cache-dependency-path: 'backend/requirements.txt'
     - name: Install dependencies
       run: |
+        sudo apt-get update && sudo apt-get install -y libgl1
         python -m pip install --upgrade pip
-        pip install pytest
+        pip install pytest pytest-github-actions-annotate-failures
         if [ -f backend/requirements.txt ]; then
           # Install CPU-only version of torch to save time and space in CI
           pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
@@ -53,7 +56,13 @@ jobs:
         python -m compileall .
     - name: Test with pytest
       run: |
-        pytest tests/test_ingredients_vision.py
+        pytest --junitxml=test-results.xml
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: |
+          test-results.xml
 
   deploy:
     needs: test

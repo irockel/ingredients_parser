@@ -125,10 +125,22 @@ by a user and password.
 
 ## 🧪 Testing
 
-The project uses `pytest` for testing. To run the tests, use:
+The project uses `pytest` for testing. To run all tests, use:
 
 ```bash
-pytest tests/test_ingredients_vision.py
+pytest
+```
+
+To run only unit tests:
+
+```bash
+pytest tests/unit
+```
+
+To run integration tests (requires EasyOCR dependencies):
+
+```bash
+pytest tests/integration
 ```
 
 *Note: If `easyocr` or `torch` are not installed, these tests will be skipped automatically.*
@@ -141,7 +153,7 @@ Sample images for testing can be found in `tests/static/cropped_ingredients`.
 - The current version is optimized for English text.
 
 ---
-*Built with Python, Flask, and EasyOCR.*
+*Built with Python, FastAPI, and EasyOCR.*
 
  
 
