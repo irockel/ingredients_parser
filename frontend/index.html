@@ -16,7 +16,7 @@
                 </div>
                 <div class="flex items-center space-x-3">
                     <span id="auth-indicator" class="hidden flex h-2 w-2 rounded-full bg-green-500" title="Authenticated"></span>
-                    <button onclick="toggleAuthModal()" class="text-sm font-medium text-gray-600 hover:text-gray-900 border rounded-md px-3 py-1.5 flex items-center space-x-1 hover:bg-gray-50 transition-colors">
+                    <button onclick="login()" class="text-sm font-medium text-gray-600 hover:text-gray-900 border rounded-md px-3 py-1.5 flex items-center space-x-1 hover:bg-gray-50 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                         </svg>
@@ -86,7 +86,7 @@
                     <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                     </svg>
-                    <span>Please <button type="button" onclick="toggleAuthModal()" class="font-bold underline">Authorize</button> before analyzing images.</span>
+                    <span>Please <button type="button" onclick="login()" class="font-bold underline">Login</button> before analyzing images.</span>
                 </div>
 
                 <button type="submit" id="submit-btn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors disabled:bg-green-300">
@@ -159,10 +159,37 @@
         const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const API_URL = IS_LOCAL
             ? 'http://localhost:8000'
-            : 'https://lg5s2gkkn3ra3w6eww7e3bsdde0cyqap.lambda-url.eu-central-1.on.aws/';
+            : '__HTTP_API_URL__';
         const SIZE_LIMIT = 6 * 1024 * 1024; // 6 MB AWS Lambda payload limit
-        
-        let authHeader = sessionStorage.getItem('ingredients_auth') || '';
+
+        // Cognito configuration placeholders (replace after Terraform apply with outputs)
+        const COGNITO_DOMAIN = '__COGNITO_DOMAIN__'; // e.g., ingredients-parser-abc123
+        const COGNITO_CLIENT_ID = '__COGNITO_CLIENT_ID__';
+        const REDIRECT_URI = window.location.origin + '/';
+        const LOGIN_URL = `https://${COGNITO_DOMAIN}.auth.eu-central-1.amazoncognito.com/login?client_id=${COGNITO_CLIENT_ID}&response_type=token&scope=openid+email+profile&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+        const LOGOUT_URL = `https://${COGNITO_DOMAIN}.auth.eu-central-1.amazoncognito.com/logout?client_id=${COGNITO_CLIENT_ID}&logout_uri=${encodeURIComponent(REDIRECT_URI)}`;
+
+        // Capture id_token from Cognito Hosted UI redirect fragment
+        (function captureCognitoToken() {
+            if (window.location.hash && window.location.hash.includes('id_token')) {
+                const params = new URLSearchParams(window.location.hash.substring(1));
+                const token = params.get('id_token');
+                if (token) {
+                    sessionStorage.setItem('id_token', token);
+                    // Clean URL fragment
+                    history.replaceState(null, document.title, window.location.pathname + window.location.search);
+                }
+            }
+        })();
+
+        // Prefer Cognito id_token as Bearer, fallback to legacy basic creds if still set
+        let authHeader = '';
+        const idToken = sessionStorage.getItem('id_token');
+        if (idToken) {
+            authHeader = 'Bearer ' + idToken;
+        } else {
+            authHeader = sessionStorage.getItem('ingredients_auth') || '';
+        }
 
         const fileInput = document.getElementById('dropzone-file');
         const fileNameDisplay = document.getElementById('file-name');
@@ -292,6 +319,19 @@
             } else {
                 nutritionContent.innerHTML = `<p class="text-gray-400 italic">No nutrition information detected</p>`;
             }
+        }
+
+        function login() {
+            if (COGNITO_DOMAIN === '__COGNITO_DOMAIN__' || COGNITO_CLIENT_ID === '__COGNITO_CLIENT_ID__') {
+                alert('Cognito is not configured. Please set COGNITO domain and client ID placeholders in index.html.');
+                return;
+            }
+            window.location.href = LOGIN_URL;
+        }
+
+        function logout() {
+            sessionStorage.removeItem('id_token');
+            window.location.href = LOGOUT_URL;
         }
 
         function resetUpload() {

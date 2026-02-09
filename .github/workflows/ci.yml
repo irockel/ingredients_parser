@@ -129,7 +129,7 @@ jobs:
       run: |
         aws lambda update-function-configuration \
           --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
-          --environment "Variables={OCR_TYPE=rekognition,BASIC_USER_ID=${{ secrets.BASIC_USER_ID }},BASIC_USER_PASSWORD=${{ secrets.BASIC_USER_PASSWORD }}}"
+          --environment "Variables={OCR_TYPE=rekognition}"
 
     - name: Deploy Frontend to S3
       run: |

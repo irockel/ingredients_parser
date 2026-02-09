@@ -2,11 +2,8 @@ output "ecr_repository_url" {
   value = aws_ecr_repository.app.repository_url
 }
 
-output "lambda_function_url" {
-  value = aws_lambda_function_url.api_url.function_url
-}
 
-output "frontend_s3_url" {
+output "frontend_url" {
   value = "https://${var.subdomain}.${var.domain_name}"
 }
 
@@ -25,3 +22,21 @@ output "frontend_s3_bucket" {
 output "github_actions_role_arn" {
   value = aws_iam_role.github_actions.arn
 }
+
+output "cognito_user_pool_id" {
+  value = aws_cognito_user_pool.this.id
+}
+
+output "cognito_user_pool_client_id" {
+  value = aws_cognito_user_pool_client.this.id
+}
+
+output "cognito_user_pool_client_audience" {
+  description = "Audience (client ID) to configure API Gateway JWT authorizer"
+  value       = aws_cognito_user_pool_client.this.id
+}
+
+output "cognito_domain" {
+  value = aws_cognito_user_pool_domain.this.domain
+}
+
