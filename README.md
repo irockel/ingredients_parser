@@ -65,7 +65,7 @@ Note: Using Rekognition requires `boto3` to be configured with valid AWS credent
 
 ### AWS Deployment (Terraform)
 
-The infrastructure is managed using Terraform and includes an ECR repository, a Lambda function, an API Gateway, an S3 bucket for the static frontend, and a **CloudFront distribution** with TLS (ACM) for secure, high-performance delivery. Also used **Cognito** for user authentication. It uses a **remote state** stored in S3 for better collaboration and state persistence.
+The infrastructure is managed using Terraform and includes an ECR repository, a Lambda function, an API Gateway, an S3 bucket for the static frontend, and a **CloudFront distribution** with TLS (ACM) for secure, high-performance delivery. Also uses **Cognito** for user authentication. It uses a **remote state** stored in S3 for better collaboration and state persistence.
 
 <div style="text-align: center;"><img src="./aws-architecture.svg" alt="AWS Architecture" width="800"></div>
 
