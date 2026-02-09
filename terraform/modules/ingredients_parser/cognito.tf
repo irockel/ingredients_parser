@@ -11,6 +11,10 @@ resource "aws_cognito_user_pool" "this" {
   }
 
   auto_verified_attributes = ["email"]
+  
+  admin_create_user_config {
+    allow_admin_create_user_only = true
+  }
 }
 
 resource "aws_cognito_user_pool_domain" "this" {
