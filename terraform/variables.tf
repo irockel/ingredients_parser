@@ -28,15 +28,8 @@ variable "subdomain" {
   default     = "ingredients"
 }
 
-variable "basic_user_id" {
-  description = "Basic Auth User ID"
+variable "cognito_domain_prefix" {
+  description = "The domain prefix to use for the cognito service"
   type        = string
-  default     = ""
-}
-
-variable "basic_user_password" {
-  description = "Basic Auth Password"
-  type        = string
-  default     = ""
-  sensitive   = true
+  default     = "ingredients-grimmfrost-de"
 }

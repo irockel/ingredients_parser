@@ -35,15 +35,19 @@ variable "subdomain" {
   type        = string
 }
 
-variable "basic_user_id" {
-  description = "Basic Auth User ID"
+variable "cognito_domain_prefix" {
+  description = "Cognito domain prefix for Hosted UI"
   type        = string
-  default     = ""
 }
 
-variable "basic_user_password" {
-  description = "Basic Auth Password"
-  type        = string
-  default     = ""
-  sensitive   = true
+variable "cognito_app_callback_urls" {
+  description = "Callback URLs for Cognito App Client"
+  type        = list(string)
+  default     = []
+}
+
+variable "cognito_app_logout_urls" {
+  description = "Logout URLs for Cognito App Client"
+  type        = list(string)
+  default     = []
 }
