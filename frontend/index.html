@@ -159,12 +159,11 @@
         const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const API_URL = IS_LOCAL
             ? 'http://localhost:8000'
-            : '__HTTP_API_URL__';
+            : 'https://bra43eipn9.execute-api.eu-central-1.amazonaws.com';
         const SIZE_LIMIT = 6 * 1024 * 1024; // 6 MB AWS Lambda payload limit
 
-        // Cognito configuration placeholders (replace after Terraform apply with outputs)
-        const COGNITO_DOMAIN = '__COGNITO_DOMAIN__'; // e.g., ingredients-parser-abc123
-        const COGNITO_CLIENT_ID = '__COGNITO_CLIENT_ID__';
+        const COGNITO_DOMAIN = 'ingredients-grimmfrost-de';
+        const COGNITO_CLIENT_ID = '6p4unuqgvq4mhplasm8lnp0f81';
         const REDIRECT_URI = window.location.origin + '/';
         const LOGIN_URL = `https://${COGNITO_DOMAIN}.auth.eu-central-1.amazoncognito.com/login?client_id=${COGNITO_CLIENT_ID}&response_type=token&scope=openid+email+profile&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
         const LOGOUT_URL = `https://${COGNITO_DOMAIN}.auth.eu-central-1.amazoncognito.com/logout?client_id=${COGNITO_CLIENT_ID}&logout_uri=${encodeURIComponent(REDIRECT_URI)}`;
