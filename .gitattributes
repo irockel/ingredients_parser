@@ -1,0 +1,3 @@
+# Ordner ignorieren
+frontend/** linguist-documentation
+terraform/** linguist-documentation
