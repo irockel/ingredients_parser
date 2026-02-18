@@ -1,15 +1,12 @@
 import os
 import tempfile
 import base64
-import secrets
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-# from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from mangum import Mangum
-from typing import Dict, Any
 
-from app.logic.ingredients import extract_ingredients_and_allergens
-from app.logic.nutrition import parse_nutrition
+from logic.ingredients import extract_ingredients_and_allergens
+from logic.nutrition import (parse_nutrition)
 
 app = FastAPI(title="Nutrition & Ingredients Parser API")
 
@@ -22,11 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# security = HTTPBasic(auto_error=False)
-
-# Basic authentication removed; authentication is now enforced by API Gateway (Cognito JWT authorizer).
-# We keep a helper that returns a static user when called locally for convenience.
-
+# static helper
 def get_current_user():
     return "authenticated_user"
 
