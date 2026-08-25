@@ -1,0 +1,118 @@
+openapi: 3.0.0
+info:
+  title: Nutrition & Ingredients Parser API
+  version: 1.0.0
+  description: API for extracting ingredients, allergens, and nutrition information from images using OCR.
+
+paths:
+  /:
+    get:
+      summary: Root endpoint
+      description: Returns a status message and the currently configured OCR provider.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Nutrition & Ingredients Parser API is running"
+                  ocr_provider:
+                    type: string
+                    example: "easyocr"
+                required:
+                  - message
+                  - ocr_provider
+
+  /process:
+    post:
+      summary: Process Image
+      description: Upload an image to extract ingredients, allergens, and nutrition data.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The image file to be processed.
+              required:
+                - file
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ingredients:
+                    type: string
+                    description: Extracted list of ingredients.
+                  allergens:
+                    type: string
+                    description: Extracted allergen warnings.
+                  nutrition:
+                    type: string
+                    description: Extracted nutrition information text.
+                  image_data:
+                    type: string
+                    description: Base64-encoded string of the original image.
+                  filename:
+                    type: string
+                    description: The name of the uploaded file.
+                required:
+                  - ingredients
+                  - allergens
+                  - nutrition
+                  - image_data
+                  - filename
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                    description: Error message details.
+
+components:
+  schemas:
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    ValidationError:
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+        msg:
+          type: string
+        type:
+          type: string
